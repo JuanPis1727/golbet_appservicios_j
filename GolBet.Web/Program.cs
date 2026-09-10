@@ -8,9 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==========================================
-// 1. Registro de Servicios en el Contenedor
-// ==========================================
 
 builder.Services.AddControllersWithViews();
 
@@ -28,14 +25,10 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Servicios de negocio
 builder.Services.AddScoped<IMatchService, MatchService>();
 
-// ==========================================
-// 2. Construcción de la aplicación
-// ==========================================
+
 var app = builder.Build();
 
-// ==========================================
-// 3. Ejecución del Seeder al arrancar
-// ==========================================
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -51,9 +44,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// ==========================================
-// 4. Pipeline HTTP (Middlewares)
-// ==========================================
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
