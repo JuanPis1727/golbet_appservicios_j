@@ -1,33 +1,59 @@
 using GolBet.Repositories.Data;
 using GolBet.Repositories.Implementations;
 using GolBet.Repositories.Interfaces;
+using GolBet.Services.Implementations;
+using GolBet.Services.Interfaces;
+using GolBet.Services.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Registro de Servicios (Controllers, DbContext, Inyección de Dependencias)
+// ==========================================
+// 1. Registro de Servicios en el Contenedor
+// ==========================================
+
 builder.Services.AddControllersWithViews();
 
+// Base de datos
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Repositorio genérico abierto
+// Repositorios
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-// Repositorios específicos
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Servicios de negocio
+builder.Services.AddScoped<IMatchService, MatchService>();
+
+// ==========================================
 // 2. Construcción de la aplicación
+// ==========================================
 var app = builder.Build();
 
-// 3. Ejecución del Seeder al arrancar (Scope temporal)
+// ==========================================
+// 3. Ejecución del Seeder al arrancar
+// ==========================================
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await DbSeeder.SeedAsync(context);
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        await DbSeeder.SeedAsync(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al ejecutar el seeder de la base de datos.");
+    }
 }
 
-// 4. Configuración del pipeline HTTP (Middleware)
+// ==========================================
+// 4. Pipeline HTTP (Middlewares)
+// ==========================================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
