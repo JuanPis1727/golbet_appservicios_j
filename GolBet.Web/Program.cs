@@ -1,3 +1,4 @@
+using System.Globalization;
 using GolBet.Repositories.Data;
 using GolBet.Repositories.Implementations;
 using GolBet.Repositories.Interfaces;
@@ -6,8 +7,12 @@ using GolBet.Services.Interfaces;
 using GolBet.Services.Mapping;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+// Configuración regional para Colombia (fechas en español y formato monetario)
+var culture = new CultureInfo("es-CO");
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
 
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
@@ -24,10 +29,9 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Servicios de negocio
 builder.Services.AddScoped<IMatchService, MatchService>();
-
+builder.Services.AddScoped<ITeamService, TeamService>();
 
 var app = builder.Build();
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -43,7 +47,6 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Ocurrió un error al ejecutar el seeder de la base de datos.");
     }
 }
-
 
 if (!app.Environment.IsDevelopment())
 {
