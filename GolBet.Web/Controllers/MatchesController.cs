@@ -3,6 +3,11 @@ using GolBet.Services.DTOs;
 using GolBet.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+
+using GolBet.Repositories.Data;
+
+
 
 namespace GolBet.Web.Controllers;
 
@@ -64,11 +69,21 @@ public class MatchesController : Controller
             await LoadTeamsAsync();
             return View(dto);
         }
+
+        await LoadTeamsAsync();
+
+        return View(new MatchFormDto());
+
     }
+
+
 
     private async Task LoadTeamsAsync()
     {
         var teams = await _teamService.GetAllAsync();
         ViewBag.Teams = new SelectList(teams, "Id", "Name");
     }
+
+
 }
+
