@@ -9,8 +9,11 @@ using GolBet.Services.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-// Configuración regional para Colombia (fechas en español y formato monetario)
+// Configuración regional para Colombia con soporte de punto (.) para decimales
 var culture = new CultureInfo("es-CO");
+culture.NumberFormat.NumberDecimalSeparator = ".";
+culture.NumberFormat.CurrencyDecimalSeparator = ".";
+
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 
