@@ -51,11 +51,11 @@ builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-
 // Servicios de negocio
 builder.Services.AddScoped<IMatchService, MatchService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
-
+builder.Services.AddScoped<IBetRepository, BetRepository>();
+builder.Services.AddScoped<IBetService, BetService>();
 var app = builder.Build();
 
 // Seeder de la base de datos (con soporte para Roles y Usuarios de Identity)
